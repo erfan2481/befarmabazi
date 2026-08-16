@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ERFAN | Befarma Bazi Studio</title>
+    <meta name="description" content="عرفان، توسعه‌دهنده بازی و اپلیکیشن موبایل - نقشه‌ی سفر پروژه‌های استودیو بفرما بازی">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #05040a;
+            --panel: rgba(20, 16, 34, 0.72);
+            --panel-strong: rgba(22, 18, 38, 0.9);
+            --border: rgba(255, 255, 255, 0.09);
+            --border-hover: rgba(255, 255, 255, 0.24);
+            --ink: #f6f4ff;
+            --ink-dim: #9d97b8;
+            --magenta: #ff2e88;
+            --cyan: #2dd4ff;
+            --violet: #8b5cf6;
+            --green: #22e2a0;
+            --amber: #ffb020;
+            --radius-lg: 22px;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #241f36; border-radius: 20px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; scroll-behavior: smooth; }
+
+        .pixel { font-family: 'Press Start 2P', cursive; direction: ltr; unicode-bidi: isolate; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; cursor: pointer; }
+        :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+
+        /* --- فضای پس‌زمینه: کهکشان + ستاره‌ها --- */
+        #starfield {
+            position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none;
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 25% 65%, rgba(255,255,255,0.45), transparent),
+                radial-gradient(1.5px 1.5px at 40% 15%, rgba(255,255,255,0.5), transparent),
+                radial-gradient(1px 1px at 55% 80%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1.5px 1.5px at 70% 35%, rgba(255,255,255,0.55), transparent),
+                radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 15% 90%, rgba(255,255,255,0.5), transparent),
+                radial-gradient(1.5px 1.5px at 92% 15%, rgba(255,255,255,0.45), transparent),
+                radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.35), transparent),
+                radial-gradient(1px 1px at 33% 40%, rgba(255,255,255,0.4), transparent);
+            background-repeat: repeat;
+            background-size: 100% 100%;
+        }
+        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle linear infinite; will-change: opacity; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.9; } }
+
+        .nebula { position: fixed; inset: -10%; z-index: -1; pointer-events: none; }
+        .nebula span { position: absolute; border-radius: 50%; opacity: 0.14; }
+        .neb-1 { width: 46vw; height: 46vw; background: radial-gradient(circle, var(--cyan), transparent 70%); top: -14%; right: -12%; }
+        .neb-2 { width: 38vw; height: 38vw; background: radial-gradient(circle, var(--magenta), transparent 70%); bottom: 2%; left: -10%; }
+
+        #levelbar { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--magenta), var(--cyan)); box-shadow: 0 0 10px var(--cyan); z-index: 300; transition: width 0.12s linear; }
+
+        /* --- ناوبار --- */
+        nav {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 900px; padding: 10px 18px;
+            background: rgba(12, 10, 22, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 50px;
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+            z-index: 100; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .nav-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .nav-logo { font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; background: linear-gradient(to left, var(--cyan), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-tag { font-size: 0.5rem; color: var(--bg); background: var(--amber); padding: 3px 6px; border-radius: 4px; line-height: 1.2; }
+        .nav-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 6px 16px; border-radius: 30px; font-size: 0.78rem; font-weight: 600; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; }
+        .nav-btn:hover { background: var(--ink); color: var(--bg); transform: scale(1.04); box-shadow: 0 0 20px rgba(255, 255, 255, 0.15); }
+
+        /* --- هیرو --- */
+        header { text-align: center; padding: 130px 16px 30px; display: flex; flex-direction: column; align-items: center; animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .avatar-container { position: relative; width: 108px; height: 108px; margin-bottom: 16px; }
+        .avatar-glow { position: absolute; inset: -4px; background: conic-gradient(from 0deg, var(--magenta), var(--cyan), var(--violet), var(--magenta)); border-radius: 50%; z-index: -1; filter: blur(10px); opacity: 0.75; animation: spinRing 6s linear infinite; }
+        @keyframes spinRing { 100% { transform: rotate(360deg); } }
+        .avatar { width: 108px; height: 108px; border-radius: 50%; border: 4px solid var(--bg); object-fit: cover; background: #1e1730; }
+
+        .studio-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.03); color: var(--ink-dim); border: 1px solid var(--border); padding: 4px 14px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; margin-bottom: 12px; backdrop-filter: blur(10px); }
+        .studio-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: twinkle 1.6s infinite ease-in-out; }
+
+        header h1 { font-size: 2.6rem; font-weight: 900; margin-bottom: 6px; color: #fff; line-height: 1.2; }
+
+        .typing-container { display: inline-block; margin-bottom: 10px; }
+        .typing-text { font-size: 1rem; font-weight: 600; background: linear-gradient(to left, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-right: 2px solid var(--cyan); padding-right: 6px; white-space: nowrap; overflow: hidden; animation: typing 3s steps(40, end), blink-caret .75s step-end infinite; }
+        @keyframes typing { from { max-width: 0 } to { max-width: 100% } }
+        @keyframes blink-caret { 50% { border-color: transparent } }
+
+        header p.lede { font-size: 0.95rem; color: var(--ink-dim); max-width: 480px; line-height: 1.8; margin-bottom: 20px; padding: 0 8px; }
+
+        /* --- HUD نوار پیشرفت سفر --- */
+        .xp-hud { width: 100%; max-width: 320px; margin-bottom: 24px; }
+        .xp-hud-top { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--ink-dim); margin-bottom: 4px; }
+        .xp-hud-top b { color: var(--cyan); font-weight: 800; }
+        .xp-bar { height: 6px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); overflow: hidden; }
+        .xp-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--magenta), var(--cyan)); box-shadow: 0 0 10px var(--cyan); width: 0%; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+
+        /* --- نسخه کوچک کارت ایده در هدر --- */
+        .mini-idea {
+            display: flex; align-items: center; gap: 10px; text-align: right;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 50px; padding: 6px 10px 6px 16px; margin-bottom: 24px;
+            max-width: 380px; width: 100%; text-decoration: none; transition: all 0.3s ease;
+        }
+        .mini-idea:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); }
+        .mini-idea .mini-idea-icon {
+            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--violet), var(--cyan));
+            display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+        }
+        .mini-idea .mini-idea-txt { flex: 1; min-width: 0; }
+        .mini-idea .mini-idea-txt b { display: block; font-size: 0.8rem; color: #fff; }
+        .mini-idea .mini-idea-txt span { display: block; font-size: 0.65rem; color: var(--ink-dim); }
+        .mini-idea .mini-idea-arrow { font-size: 0.9rem; color: var(--cyan); flex-shrink: 0; }
+
+        /* --- جستجو و فیلتر --- */
+        .controls { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 420px; margin-bottom: 8px; }
+        .search-wrap { position: relative; width: 100%; }
+        .search-wrap svg { position: absolute; top: 50%; right: 16px; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ink-dim); pointer-events: none; }
+        #search-input { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--ink); padding: 10px 42px 10px 14px; border-radius: 50px; font-size: 0.85rem; }
+        #search-input::placeholder { color: var(--ink-dim); }
+        #search-input:focus { border-color: var(--border-hover); background: rgba(255,255,255,0.05); }
+        .filter-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.02); padding: 4px; border-radius: 50px; border: 1px solid var(--border); }
+        .filter-btn { background: transparent; border: none; color: var(--ink-dim); padding: 6px 16px; border-radius: 40px; cursor: pointer; font-weight: 600; font-size: 0.78rem; transition: all 0.3s ease; }
+        .filter-btn.active, .filter-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+
+        /* --- نقشه سفر / مسیر مراحل --- */
+        .map-wrap { max-width: 860px; margin: 40px auto 0; padding: 10px 12px 20px; position: relative; }
+        .map-hint { text-align: center; color: var(--ink-dim); font-size: 0.75rem; margin-bottom: 36px; }
+        .map-hint .pixel { font-size: 0.55rem; color: var(--amber); display: block; margin-bottom: 6px; }
+
+        .level-path { position: relative; }
+        .level-path::before {
+            content: ''; position: absolute; top: 10px; bottom: 10px; left: 50%; transform: translateX(-50%);
+            width: 2px; background: repeating-linear-gradient(to bottom, var(--cyan) 0 10px, transparent 10px 22px);
+            opacity: 0.4;
+        }
+
+        .level-row { display: grid; grid-template-columns: 1fr 64px 1fr; align-items: center; gap: 12px; position: relative; margin-bottom: 36px; }
+        .level-row:last-of-type { margin-bottom: 0; }
+
+        .marker {
+            grid-column: 2; width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; cursor: pointer; position: relative; z-index: 2;
+            background: var(--panel-strong); border: 2px solid var(--cyan);
+            box-shadow: 0 0 12px rgba(45, 212, 255, 0.25);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
+        }
+        .marker:hover, .marker:focus-visible { transform: scale(1.08); box-shadow: 0 0 20px rgba(45, 212, 255, 0.45); }
+        .level-row[data-status="pending"] .marker { border-color: var(--amber); box-shadow: 0 0 12px rgba(255, 176, 32, 0.25); border-style: dashed; }
+        .level-row[data-status="building"] .marker { border-color: var(--amber); box-shadow: 0 0 12px rgba(255, 176, 32, 0.25); border-style: dashed; }
+
+        .card-slot { min-height: 10px; }
+        .card-slot:empty { display: none; }
+
+        .level-card-btn {
+            width: 100%; text-align: right; background: var(--panel); border: 1px solid var(--border);
+            border-radius: 18px; padding: 14px 16px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; transform: translateY(12px);
+        }
+        .level-card-btn.visible { opacity: 1; transform: translateY(0); }
+        .level-card-btn:hover { border-color: var(--border-hover); box-shadow: 0 8px 20px rgba(0,0,0,0.3); transform: translateY(-2px); }
+
+        .level-card-btn img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: #1e1730; flex-shrink: 0; }
+        .level-card-btn .txt { min-width: 0; }
+        .level-card-btn h3 { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
+        .level-card-btn p { font-size: 0.75rem; color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* --- فینال مسیر: کارت ایده --- */
+        .finale { margin-top: 44px; text-align: center; }
+        .finale-flag { font-size: 1.6rem; margin-bottom: 12px; }
+        .finale-wrapper { position: relative; border-radius: 22px; padding: 2px; background: linear-gradient(60deg, var(--violet), var(--cyan), var(--green)); background-size: 300% 300%; animation: gradientShift 6s ease infinite; }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .finale-card { background: var(--bg); border-radius: 20px; padding: 24px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .finale-card h2 { font-size: 1.1rem; font-weight: 800; }
+        .finale-card p { color: var(--ink-dim); font-size: 0.85rem; line-height: 1.8; max-width: 380px; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 22px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 0.85rem; transition: all 0.3s ease; cursor: pointer; border: none; }
+        .btn svg { width: 18px; height: 18px; }
+        .btn-idea { background: linear-gradient(135deg, var(--violet), var(--cyan)); color: #fff; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3); }
+        .btn-idea:hover { box-shadow: 0 10px 28px rgba(45, 212, 255, 0.35); filter: brightness(1.08); }
+        .btn-bazaar { background: rgba(34, 226, 160, 0.1); color: var(--green); border: 1px solid rgba(34, 226, 160, 0.25); width: 100%; }
+        .btn-bazaar:hover { background: rgba(34, 226, 160, 0.18); box-shadow: 0 6px 18px rgba(34, 226, 160, 0.15); }
+        .btn-pending { background-color: rgba(255, 176, 32, 0.06); color: var(--amber); border: 1px dashed rgba(255, 176, 32, 0.4); cursor: default; width: 100%; }
+
+        .empty-map { text-align: center; color: var(--ink-dim); padding: 30px 16px; display: none; font-size: 0.9rem; }
+
+        /* --- مودال جزئیات مرحله --- */
+        .modal-overlay { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; background: rgba(5, 4, 10, 0.8); backdrop-filter: blur(8px); padding: 16px; }
+        .modal-overlay.show { display: flex; }
+        .modal-card { background: var(--panel-strong); border: 1px solid var(--border-hover); border-radius: 20px; padding: 24px 20px; max-width: 340px; width: 100%; position: relative; box-shadow: 0 0 60px rgba(45, 212, 255, 0.12); animation: modalPop 0.25s cubic-bezier(0.16,1,0.3,1); }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-close { position: absolute; top: 12px; left: 12px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--ink); cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: rgba(255,255,255,0.14); }
+        .modal-tag { display: inline-block; font-size: 0.65rem; font-weight: 800; padding: 3px 10px; border-radius: 6px; margin-bottom: 10px; }
+        .modal-tag.game { background: rgba(139, 92, 246, 0.18); color: #ddd6fe; }
+        .modal-tag.app { background: rgba(45, 212, 255, 0.15); color: #a6ecff; }
+        .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .modal-head img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: #1e1730; }
+        .modal-head h3 { font-size: 1rem; font-weight: 800; color: #fff; }
+        .modal-desc { color: var(--ink-dim); font-size: 0.85rem; line-height: 1.8; margin-bottom: 18px; }
+        .modal-nav { display: flex; gap: 8px; margin-top: 12px; }
+        .modal-nav button { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--ink-dim); padding: 8px 0; border-radius: 10px; cursor: pointer; font-size: 0.75rem; }
+        .modal-nav button:hover:not(:disabled) { color: var(--ink); border-color: var(--border-hover); }
+        .modal-nav button:disabled { opacity: 0.3; cursor: default; }
+
+        /* --- دکمه بازگشت به بالا و توست --- */
+        #back-to-top {
+            position: fixed; bottom: 20px; left: 20px; width: 46px; height: 46px; border-radius: 50%;
+            background: rgba(14, 12, 24, 0.85); border: 1px solid var(--border); backdrop-filter: blur(10px);
+            color: var(--ink); font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 150; opacity: 0; pointer-events: none; transform: translateY(8px);
+            transition: all 0.3s ease; text-decoration: none;
+        }
+        #back-to-top.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        #back-to-top:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(45, 212, 255, 0.25); }
+
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(14, 12, 24, 0.95); border: 1px solid var(--border-hover); color: var(--ink); padding: 8px 18px; border-radius: 50px; font-size: 0.8rem; z-index: 250; opacity: 0; pointer-events: none; transition: all 0.35s cubic-bezier(0.16,1,0.3,1); white-space: nowrap; }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        footer { text-align: center; margin-top: 56px; padding: 28px 16px 24px; border-top: 1px solid var(--border); background: rgba(5, 4, 10, 0.85); backdrop-filter: blur(10px); }
+        .footer-title { font-size: 0.7rem; color: #e2def8; margin-bottom: 6px; }
+        .footer-sub { font-size: 0.75rem; color: #5c5578; margin-bottom: 16px; }
+        .footer-contact { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 0.78rem; color: var(--ink-dim); cursor: pointer; transition: all 0.25s ease; margin-bottom: 20px; border: none; background: rgba(255,255,255,0.03); }
+        .footer-contact:hover { border-color: var(--border-hover); color: var(--ink); background: rgba(255,255,255,0.06); }
+        .footer-brand { font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; color: #4a4460; }
+
+        /* --- ایستر اگ --- */
+        #achievement { position: fixed; inset: 0; z-index: 400; display: none; align-items: center; justify-content: center; background: rgba(5, 4, 10, 0.7); backdrop-filter: blur(6px); }
+        #achievement.show { display: flex; }
+        .achievement-card { background: var(--panel-strong); border: 1px solid var(--border-hover); border-radius: 18px; padding: 28px 32px; text-align: center; max-width: 280px; box-shadow: 0 0 60px rgba(255, 46, 136, 0.2); }
+        .achievement-card .pixel { font-size: 0.6rem; color: var(--amber); margin-bottom: 10px; display: block; }
+        .achievement-card p { color: var(--ink-dim); font-size: 0.8rem; line-height: 1.8; }
+        .confetti-piece { position: fixed; top: -20px; font-size: 1.2rem; z-index: 399; animation: confettiFall linear forwards; pointer-events: none; }
+        @keyframes confettiFall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.2; } }
+
+        @media (max-width: 700px) {
+            header h1 { font-size: 2rem; }
+            nav { width: 94%; padding: 8px 14px; top: 12px; border-radius: 40px; }
+            .nav-logo { font-size: 0.95rem; }
+            .nav-btn { font-size: 0.7rem; padding: 4px 12px; }
+            .typing-text { font-size: 0.85rem; }
+            .level-row { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 8px; margin-bottom: 28px; }
+            .marker { order: -1; width: 52px; height: 52px; font-size: 1.2rem; }
+            .level-path::before { right: 50%; transform: translateX(50%); }
+            .level-card-btn { padding: 12px 14px; }
+            .level-card-btn img { width: 42px; height: 42px; }
+            .level-card-btn h3 { font-size: 0.85rem; }
+            .level-card-btn p { font-size: 0.7rem; }
+            .map-wrap { padding: 10px 8px 20px; }
+            .finale-card { padding: 20px 16px; }
+            .finale-card h2 { font-size: 1rem; }
+            .finale-card p { font-size: 0.8rem; }
+            #back-to-top { bottom: 16px; left: 16px; width: 42px; height: 42px; font-size: 1rem; }
+            .modal-card { max-width: 300px; padding: 20px 16px; }
+            header { padding: 110px 12px 24px; }
+            .avatar-container { width: 92px; height: 92px; }
+            .avatar { width: 92px; height: 92px; }
+            .xp-hud { max-width: 280px; }
+            .controls { max-width: 100%; }
+            .mini-idea { max-width: 100%; padding: 5px 8px 5px 12px; }
+            .mini-idea .mini-idea-icon { width: 30px; height: 30px; font-size: 0.8rem; }
+            .mini-idea .mini-idea-txt b { font-size: 0.75rem; }
+            .mini-idea .mini-idea-txt span { font-size: 0.6rem; }
+            .studio-badge { font-size: 0.65rem; padding: 3px 12px; }
+            header p.lede { font-size: 0.85rem; }
+            .filter-btn { font-size: 0.7rem; padding: 4px 12px; }
+            #search-input { font-size: 0.8rem; padding: 8px 36px 8px 12px; }
+            .map-hint { font-size: 0.7rem; margin-bottom: 28px; }
+            footer { margin-top: 40px; padding: 20px 12px 18px; }
+            .footer-sub { font-size: 0.7rem; }
+            .footer-contact { font-size: 0.7rem; padding: 5px 12px; }
+        }
+
+        @media (max-width: 400px) {
+            header h1 { font-size: 1.7rem; }
+            .nav-logo { font-size: 0.85rem; }
+            .nav-tag { font-size: 0.4rem; padding: 2px 4px; }
+            .level-card-btn { padding: 10px 12px; }
+            .level-card-btn img { width: 36px; height: 36px; }
+            .level-card-btn h3 { font-size: 0.8rem; }
+            .modal-card { max-width: 280px; padding: 16px 14px; }
+            .modal-head img { width: 40px; height: 40px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.15s !important; }
+            .level-card-btn { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="levelbar"></div>
+    <div id="starfield"></div>
+    <div class="nebula"><span class="neb-1"></span><span class="neb-2"></span></div>
+
+    <nav>
+        <div class="nav-left">
+            <div class="nav-logo">ERFAN</div>
+            <span class="nav-tag pixel">P1</span>
+        </div>
+        <a href="https://t.me/erfan2481f" target="_blank" class="nav-btn">تماس با من</a>
+    </nav>
+
+    <header>
+        <div class="avatar-container">
+            <div class="avatar-glow"></div>
+            <img src="erfan-profile.jpg" alt="عرفان" class="avatar">
+        </div>
+
+        <div class="studio-badge"><span class="dot"></span> Befarma Bazi Studio</div>
+
+        <h1>عرفان</h1>
+
+        <div class="typing-container">
+            <div class="typing-text">توسعه‌دهنده بازی و اپلیکیشن موبایل</div>
+        </div>
+
+        <p class="lede">این نقشه‌ی سفرمه؛ هر ایستگاه یه بازی یا اپلیکیشنیه که از صفر ساختمش. روی هر مرحله بزن تا جزئیاتش رو ببینی 🗺️</p>
+
+        <div class="xp-hud">
+            <div class="xp-hud-top"><span>پیشرفت سفر</span><span><b id="xp-count">0</b>/<span id="xp-total">0</span> منتشر شده</span></div>
+            <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+        </div>
+
+        <a href="https://t.me/erfan2481f" target="_blank" class="mini-idea">
+            <span class="mini-idea-icon">✨</span>
+            <span class="mini-idea-txt"><b>ایده از تو، اجرا از من!</b><span>یه پروژه جدید رو باهم شروع کنیم</span></span>
+            <span class="mini-idea-arrow">◂</span>
+        </a>
+
+        <div class="controls">
+            <div class="search-wrap">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"></path></svg>
+                <input type="text" id="search-input" placeholder="جستجو در نقشه...">
+            </div>
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">همه</button>
+                <button class="filter-btn" data-filter="game">بازی‌ها</button>
+                <button class="filter-btn" data-filter="app">اپلیکیشن‌ها</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="map-wrap">
+        <div class="map-hint"><span class="pixel">START</span>از اینجا شروع کن و مسیر رو تا انتها برو</div>
+
+        <div class="level-path" id="level-path">
+
+            <div class="level-row" data-status="live" data-type="app">
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="0">
+                        <img src="subtranslate-icon.png" alt="ساب ترنسلیت">
+                        <div class="txt"><h3>ساب ترنسلیت</h3><p>مترجم هوشمند زیرنویس فیلم</p></div>
+                    </button>
+                </div>
+                <button class="marker" data-modal="0" aria-label="ساب ترنسلیت">💾</button>
+                <div class="card-slot"></div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="game">
+                <div class="card-slot"></div>
+                <button class="marker" data-modal="1" aria-label="جاسوس آنلاین">🕹</button>
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="1">
+                        <img src="spyfall-icon.png" alt="جاسوس آنلاین">
+                        <div class="txt"><h3>جاسوس آنلاین</h3><p>بازی گروهی استنتاجی برای دورهمی</p></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="app">
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="2">
+                        <img src="kalataraz-icon.png" alt="کالا تراز">
+                        <div class="txt"><h3>کالا تراز</h3><p>حسابداری شخصی و کنترل انبار</p></div>
+                    </button>
+                </div>
+                <button class="marker" data-modal="2" aria-label="کالا تراز">💾</button>
+                <div class="card-slot"></div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="game">
+                <div class="card-slot"></div>
+                <button class="marker" data-modal="3" aria-label="کابوی">🕹</button>
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="3">
+                        <img src="cowboy-icon.png" alt="کابوی">
+                        <div class="txt"><h3>کابوی (Cowboy)</h3><p>بازی اکشن دوئلی غرب وحشی</p></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="app">
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="4">
+                        <img src="smartcount-icon.png" alt="شمارشگر هوشمند">
+                        <div class="txt"><h3>شمارشگر هوشمند</h3><p>ابزار ساده برای شمارش‌های روزانه</p></div>
+                    </button>
+                </div>
+                <button class="marker" data-modal="4" aria-label="شمارشگر هوشمند">💾</button>
+                <div class="card-slot"></div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="app">
+                <div class="card-slot"></div>
+                <button class="marker" data-modal="5" aria-label="لینگوپلی">💾</button>
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="5">
+                        <img src="linguaplay-icon.png" alt="لینگوپلی">
+                        <div class="txt"><h3>لینگوپلی (LinguaPlay)</h3><p>آموزش ۱۱ زبان با هوش مصنوعی، بازی و تمرین روزانه</p></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="app">
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="6">
+                        <img src="typetest-icon.png" alt="تایپ‌سنج">
+                        <div class="txt"><h3>تایپ‌سنج</h3><p>تست سرعت تایپ فارسی؛ سبک، سریع و رایگان</p></div>
+                    </button>
+                </div>
+                <button class="marker" data-modal="6" aria-label="تایپ‌سنج">💾</button>
+                <div class="card-slot"></div>
+            </div>
+
+            <div class="level-row" data-status="live" data-type="app">
+                <div class="card-slot"></div>
+                <button class="marker" data-modal="7" aria-label="ماشین حساب فضول">💾</button>
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="7">
+                        <img src="nosycalc-icon.png" alt="ماشین حساب فضول">
+                        <div class="txt"><h3>ماشین حساب فضول</h3><p>ماشین حسابی که باهاتون حرف می‌زنه و شوخی می‌کنه</p></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="level-row" data-status="building" data-type="game">
+                <div class="card-slot">
+                    <button class="level-card-btn" data-modal="8">
+                        <img src="mazeofdeath-icon.png" alt="Maze of Death">
+                        <div class="txt"><h3>Maze of Death</h3><p>بازی ماز/بقا؛ درحال ساخت 🚧</p></div>
+                    </button>
+                </div>
+                <button class="marker" data-modal="8" aria-label="Maze of Death">🕹</button>
+                <div class="card-slot"></div>
+            </div>
+
+        </div>
+
+        <div class="empty-map" id="empty-map">چیزی با این مشخصات توی نقشه پیدا نشد. یه فیلتر دیگه رو امتحان کن 🔍</div>
+
+        <div class="finale">
+            <div class="finale-flag">🏁</div>
+            <div class="finale-wrapper">
+                <div class="finale-card">
+                    <h2>ایده از تو، اجرا از من!</h2>
+                    <p>مسیر همین‌جا تموم نمی‌شه. اگه یه ایده باحال توی ذهنته، بهم بگو تا توی استودیو بفرما بازی صفر تا صدش رو برات بسازم 🫡</p>
+                    <a href="https://t.me/erfan2481f" target="_blank" class="btn btn-idea">
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        شروع یک پروژه جدید
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-title pixel">GAME OVER</div>
+        <div class="footer-sub">برای دیدن دوباره‌ی نقشه، دکمه‌ی 🕹 پایین صفحه رو بزن</div>
+        <button class="footer-contact" id="copy-contact">📋 @erfan2481f</button>
+        <div class="footer-brand">BEFARMA BAZI STUDIO</div>
+    </footer>
+
+    <a id="back-to-top" href="#" title="برو بالا" aria-label="برو بالا">🕹</a>
+    <div id="toast"></div>
+
+    <!-- مودال جزئیات مرحله -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-card" role="dialog" aria-modal="true">
+            <button class="modal-close" id="modal-close" aria-label="بستن">✕</button>
+            <span class="modal-tag" id="modal-tag"></span>
+            <div class="modal-head">
+                <img id="modal-img" src="" alt="">
+                <h3 id="modal-title"></h3>
+            </div>
+            <p class="modal-desc" id="modal-desc"></p>
+            <video id="modal-video" controls playsinline style="display:none; width:100%; border-radius:12px; margin-bottom:12px; background:#000;"></video>
+            <div id="modal-cta"></div>
+            <div class="modal-nav">
+                <button id="modal-prev">◂ قبلی</button>
+                <button id="modal-next">بعدی ▸</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="achievement">
+        <div class="achievement-card">
+            <span class="pixel">ACHIEVEMENT UNLOCKED</span>
+            <p>🎮 کد کونامی رو پیدا کردی! یه بازیکن واقعی‌ای 🏆</p>
+        </div>
+    </div>
+
+    <script>
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* --- داده‌ی مراحل (برای مودال) --- */
+        const levels = [
+            { title: 'ساب ترنسلیت', type: 'app', img: 'subtranslate-icon.png', desc: 'مترجم هوشمند و سریع زیرنویس. فایل‌های خودتون رو ترجمه کنید و بدون دغدغه زبانی، از تماشای فیلم لذت ببرید.', status: 'live', link: 'https://cafebazaar.ir/app/com.subtranslate.app' },
+            { title: 'جاسوس آنلاین', type: 'game', img: 'spyfall-icon.png', desc: 'یک بازی گروهی و استنتاجی مهیج برای دورهمی‌ها! در نقش جاسوس هویت خودتون رو پنهان کنید یا جاسوس رو پیدا کنید.', status: 'live', link: 'https://cafebazaar.ir/app/ir.spyfall.app' },
+            { title: 'کالا تراز', type: 'app', img: 'kalataraz-icon.png', desc: 'اپلیکیشنی مدرن برای مدیریت حسابداری شخصی و کنترل موجودی انبار. جریان مالی خود رو دقیق‌تر مدیریت کنید.', status: 'live', link: 'https://cafebazaar.ir/app/com.kalataraz.app' },
+            { title: 'کابوی (Cowboy)', type: 'game', img: 'cowboy-icon.png', desc: 'یک بازی اکشن دوئلی در اتمسفر غرب وحشی! سرعت عمل خودتون رو بسنجید و با شلیک‌های به موقع برنده باشید.', status: 'live', link: 'https://cafebazaar.ir/app/com.befarmabazi.cowboy' },
+            { title: 'شمارشگر هوشمند', type: 'app', img: 'smartcount-icon.png', desc: 'ابزاری ساده و فوق‌العاده سبک برای انواع شمارش‌های روزانه. رابط کاربری جذاب برای ثبت آمار بدون اشتباه.', status: 'live', link: 'https://cafebazaar.ir/app/com.smartcount.app' },
+            { title: 'لینگوپلی (LinguaPlay)', type: 'app', img: 'linguaplay-icon.png', desc: 'لینگوپلی یک اپلیکیشن مدرن آموزش زبان است که یادگیری را با بازی، هوش مصنوعی و تمرین‌های تعاملی ترکیب می‌کند تا بتوانید زبان مورد علاقه خود را از سطح مبتدی تا پیشرفته یاد بگیرید. آموزش ۱۱ زبان زنده دنیا، درس‌های مرحله‌ای، فلش‌کارت‌های هوشمند، تمرین مکالمه و تلفظ، آزمون‌های چهارگزینه‌ای، بازی‌های آموزشی، مترجم داخلی و سیستم XP و استریک روزانه.', status: 'live', link: 'https://cafebazaar.ir/app/dev.workers.erfan_f2481.languagegame.twa' },
+            { title: 'تایپ‌سنج', type: 'app', img: 'typetest-icon.png', desc: 'تست سرعت تایپ فارسی؛ سبک، سریع و کاملاً رایگان.', status: 'live', link: 'https://cafebazaar.ir/app/com.testtype.app' },
+            { title: 'ماشین حساب فضول', type: 'app', img: 'nosycalc-icon.png', desc: 'یک ماشین حساب زنده و بامزه که با شما حرف می‌زند، شوخی می‌کند و هر بار شما را غافلگیر می‌کند! 😈🧮', status: 'live', link: 'https://cafebazaar.ir/app/com.calculator.app' },
+            { title: 'Maze of Death', type: 'game', img: 'mazeofdeath-icon.png', desc: 'یک بازی ماز/بقا هیجان‌انگیز که هم‌اکنون درحال ساخته و به‌زودی منتشر می‌شود. همین حالا تریلرش رو ببینید!', status: 'building', video: 'mazeofdeath-trailer.mp4' }
+        ];
+
+        /* --- چند ستاره‌ی چشمک‌زن اضافه (کم‌تعداد، سبک) --- */
+        const starfield = document.getElementById('starfield');
+        if (!reduceMotion) {
+            const starCount = window.innerWidth < 700 ? 8 : 16;
+            for (let i = 0; i < starCount; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const size = Math.random() * 1.5 + 1;
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                s.style.top = Math.random() * 100 + 'vh';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.animationDuration = (3 + Math.random() * 3) + 's';
+                s.style.animationDelay = (Math.random() * 3) + 's';
+                starfield.appendChild(s);
+            }
+        }
+
+        /* --- نوار پیشرفت اسکرول + دکمه بازگشت به بالا (یک هندلر مشترک، throttle با rAF) --- */
+        const levelbar = document.getElementById('levelbar');
+        const backToTop = document.getElementById('back-to-top');
+        let scrollTicking = false;
+        function onScrollFrame() {
+            const h = document.documentElement;
+            const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+            levelbar.style.width = (scrolled || 0) + '%';
+            backToTop.classList.toggle('show', h.scrollTop > 500);
+            scrollTicking = false;
+        }
+        document.addEventListener('scroll', () => {
+            if (!scrollTicking) { requestAnimationFrame(onScrollFrame); scrollTicking = true; }
+        }, { passive: true });
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+        });
+
+        /* --- کپی آیدی تلگرام --- */
+        const toast = document.getElementById('toast');
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+        document.getElementById('copy-contact').addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText('@erfan2481f'); showToast('کپی شد ✅'); }
+            catch (e) { showToast('آیدی: @erfan2481f'); }
+        });
+
+        /* --- نوار XP / پیشرفت --- */
+        const liveCount = levels.filter(l => l.status === 'live').length;
+        document.getElementById('xp-total').textContent = levels.length;
+        const xpCountEl = document.getElementById('xp-count');
+        const xpFill = document.getElementById('xp-fill');
+        function countUp(el, target, dur) {
+            if (reduceMotion) { el.textContent = target; return; }
+            let cur = 0;
+            const step = Math.max(1, Math.ceil(target / 20));
+            const iv = setInterval(() => { cur += step; if (cur >= target) { cur = target; clearInterval(iv); } el.textContent = cur; }, 50);
+        }
+        countUp(xpCountEl, liveCount);
+        requestAnimationFrame(() => { xpFill.style.width = (liveCount / levels.length * 100) + '%'; });
+
+        /* --- ظاهر شدن کارت‌های مسیر هنگام اسکرول --- */
+        const cardBtns = document.querySelectorAll('.level-card-btn');
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        cardBtns.forEach(btn => io.observe(btn));
+
+        /* --- فیلتر و جستجو (کم‌رنگ کردن به‌جای حذف، برای حفظ مسیر) --- */
+        const rows = document.querySelectorAll('.level-row');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const searchInput = document.getElementById('search-input');
+        const emptyMap = document.getElementById('empty-map');
+        let activeFilter = 'all';
+
+        function applyFilters() {
+            const q = searchInput.value.trim().toLowerCase();
+            let visible = 0;
+            rows.forEach(row => {
+                const type = row.dataset.type;
+                const title = row.querySelector('h3').textContent.toLowerCase();
+                const matches = (activeFilter === 'all' || type === activeFilter) && (!q || title.includes(q));
+                row.style.display = matches ? '' : 'none';
+                if (matches) visible++;
+            });
+            emptyMap.style.display = visible === 0 ? 'block' : 'none';
+        }
+
+        filterButtons.forEach(btn => btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.dataset.filter;
+            applyFilters();
+        }));
+        searchInput.addEventListener('input', applyFilters);
+
+        /* --- مودال جزئیات مرحله --- */
+        const overlay = document.getElementById('modal-overlay');
+        const modalImg = document.getElementById('modal-img');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalTag = document.getElementById('modal-tag');
+        const modalCta = document.getElementById('modal-cta');
+        const modalVideo = document.getElementById('modal-video');
+        const modalPrev = document.getElementById('modal-prev');
+        const modalNext = document.getElementById('modal-next');
+        let currentIndex = 0;
+
+        function renderModal(i) {
+            currentIndex = i;
+            const lvl = levels[i];
+            modalImg.src = lvl.img;
+            modalImg.alt = lvl.title;
+            modalTitle.textContent = lvl.title;
+            modalDesc.textContent = lvl.desc;
+            modalTag.textContent = lvl.type === 'game' ? '🕹 بازی' : '💾 اپلیکیشن';
+            modalTag.className = 'modal-tag ' + lvl.type;
+            modalVideo.pause();
+            if (lvl.video) {
+                modalVideo.src = lvl.video;
+                modalVideo.style.display = 'block';
+            } else {
+                modalVideo.removeAttribute('src');
+                modalVideo.style.display = 'none';
+            }
+            if (lvl.status === 'live') {
+                modalCta.innerHTML = '<a class="btn btn-bazaar" target="_blank" href="' + lvl.link + '"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>دریافت از بازار</a>';
+            } else if (lvl.status === 'building') {
+                modalCta.innerHTML = '<span class="btn btn-pending">🚧 درحال ساخت...</span>';
+            } else {
+                modalCta.innerHTML = '<span class="btn btn-pending">درحال بررسی در بازار...</span>';
+            }
+            modalPrev.disabled = i === 0;
+            modalNext.disabled = i === levels.length - 1;
+        }
+
+        function openModal(i) { renderModal(i); overlay.classList.add('show'); }
+        function closeModal() { overlay.classList.remove('show'); }
+
+        document.querySelectorAll('[data-modal]').forEach(el => {
+            el.addEventListener('click', () => openModal(parseInt(el.dataset.modal, 10)));
+        });
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        modalPrev.addEventListener('click', () => { if (currentIndex > 0) renderModal(currentIndex - 1); });
+        modalNext.addEventListener('click', () => { if (currentIndex < levels.length - 1) renderModal(currentIndex + 1); });
+        document.addEventListener('keydown', (e) => {
+            if (!overlay.classList.contains('show')) return;
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'ArrowLeft') modalNext.click();
+            if (e.key === 'ArrowRight') modalPrev.click();
+        });
+
+        /* --- ایستر اگ کد کونامی --- */
+        const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let konamiPos = 0;
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+            if (key === konami[konamiPos]) {
+                konamiPos++;
+                if (konamiPos === konami.length) { unlockAchievement(); konamiPos = 0; }
+            } else {
+                konamiPos = (key === konami[0]) ? 1 : 0;
+            }
+        });
+
+        function unlockAchievement() {
+            const el = document.getElementById('achievement');
+            el.classList.add('show');
+            if (!reduceMotion) {
+                const emojis = ['🎮','🕹️','✨','🏆','⭐'];
+                for (let i = 0; i < 22; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    piece.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    piece.style.left = Math.random() * 100 + 'vw';
+                    piece.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+                    document.body.appendChild(piece);
+                    setTimeout(() => piece.remove(), 3500);
+                }
+            }
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        applyFilters();
+        onScrollFrame();
+    </script>
+</body>
+</html>
